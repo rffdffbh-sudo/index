@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>СТАЛКЕР: Зона Отчуждения</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;600;700&family=Roboto:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --dark-bg: #0a0a14; --card-bg: #141424; --accent-purple: #8a2be2;
+            --accent-violet: #9370db; --text-light: #e6e6fa; --text-gray: #b0b0c0;
+        }
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            background: linear-gradient(rgba(10,10,20,0.9), rgba(20,10,40,0.95)), 
+                        url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80') no-repeat center/cover fixed;
+            color: var(--text-light); line-height: 1.6; overflow-x: hidden;
+        }
+        h1, h2, h3 { font-family: 'Exo 2', sans-serif; font-weight: 700; }
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; padding: 0 15px; }
+        section { padding: 80px 0; min-height: 100vh; display: flex; align-items: center; }
+        .btn {
+            display: inline-block; padding: 12px 28px; background: linear-gradient(45deg, var(--accent-purple), #6a0dad);
+            color: white; text-decoration: none; border-radius: 5px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; border: none; cursor: pointer;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(138, 43, 226, 0.3); }
+        
+        /* Header */
+        header {
+            position: fixed; top: 0; width: 100%; z-index: 1000;
+            background: rgba(20, 20, 36, 0.95); padding: 15px 0; transition: all 0.3s;
+        }
+        header.scrolled { padding: 10px 0; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); }
+        nav { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.8rem; font-weight: 700; color: var(--accent-violet); }
+        .logo i { margin-right: 10px; color: var(--accent-purple); }
+        .nav-links { display: flex; list-style: none; }
+        .nav-links li { margin-left: 30px; }
+        .nav-links a { color: var(--text-light); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--accent-violet); }
+        .mobile-menu-btn { display: none; background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+        
+        /* Hero */
+        .hero { text-align: center; background: rgba(0, 0, 0, 0.5); }
+        .hero h1 { font-size: 3.2rem; margin-bottom: 20px; color: var(--accent-violet); text-shadow: 0 0 15px rgba(138, 43, 226, 0.7); }
+        .hero p { font-size: 1.2rem; margin-bottom: 30px; color: var(--text-gray); max-width: 800px; margin-left: auto; margin-right: auto; }
+        
+        /* About */
+        .about-content { display: flex; align-items: center; gap: 50px; }
+        .about-text { flex: 1; }
+        .about-text p { margin-bottom: 20px; color: var(--text-gray); }
+        .about-image { flex: 1; border-radius: 10px; overflow: hidden; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5); }
+        .about-image img { width: 100%; height: auto; display: block; }
+        
+        /* Factions */
+        .faction-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .faction-card { 
+            background: var(--card-bg); border-radius: 10px; overflow: hidden; 
+            transition: transform 0.3s, box-shadow 0.3s; border: 1px solid rgba(138, 43, 226, 0.2);
+        }
+        .faction-card:hover { 
+            transform: translateY(-10px); box-shadow: 0 15px 30px rgba(138, 43, 226, 0.2);
+            border-color: var(--accent-purple);
+        }
+        .faction-img { height: 200px; overflow: hidden; }
+        .faction-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .faction-card:hover .faction-img img { transform: scale(1.05); }
+        .faction-info { padding: 25px; }
+        .faction-info h3 { color: var(--accent-violet); margin-bottom: 10px; }
+        .faction-info p { color: var(--text-gray); margin-bottom: 15px; }
+        .faction-tag { display: inline-block; padding: 5px 10px; background: rgba(138, 43, 226, 0.2); color: var(--accent-violet); border-radius: 3px; font-size: 0.8rem; }
+        
+        /* Artifacts */
+        .artifact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+        .artifact-card { 
+            background: rgba(20, 20, 36, 0.8); border-radius: 10px; padding: 30px; text-align: center;
+            transition: all 0.3s; border: 1px solid rgba(147, 112, 219, 0.1);
+        }
+        .artifact-card:hover { border-color: var(--accent-violet); transform: translateY(-5px); }
+        .artifact-icon { font-size: 3rem; color: var(--accent-purple); margin-bottom: 20px; }
+        .artifact-card h3 { color: var(--accent-violet); }
+        .artifact-card p { color: var(--text-gray); font-size: 0.9rem; }
+        
+        /* Register */
+        .register-form { 
+            max-width: 600px; margin: 0 auto; background: rgba(20, 20, 36, 0.9); 
+            padding: 40px; border-radius: 10px; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+        .form-group { margin-bottom: 20px; text-align: left; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--accent-violet); font-weight: 500; }
+        .form-control { 
+            width: 100%; padding: 12px 15px; background: rgba(255, 255, 255, 0.08); 
+            border: 1px solid rgba(147, 112, 219, 0.3); border-radius: 5px; color: white; font-size: 1rem;
+        }
+        .form-control:focus { outline: none; border-color: var(--accent-purple); }
+        .radio-group { display: flex; gap: 20px; margin-top: 10px; }
+        .radio-option { display: flex; align-items: center; }
+        
+        /* Footer */
+        footer { background: rgba(10, 10, 20, 0.95); padding: 50px 0 20px; }
+        .footer-content { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        .footer-logo { font-size: 1.5rem; color: var(--accent-violet); margin-bottom: 20px; }
+        .footer-links { display: flex; gap: 40px; }
+        .footer-column h4 { color: var(--accent-violet); margin-bottom: 20px; }
+        .footer-column ul { list-style: none; }
+        .footer-column ul li { margin-bottom: 10px; }
+        .footer-column ul li a { color: var(--text-gray); text-decoration: none; transition: color 0.3s; }
+        .footer-column ul li a:hover { color: var(--accent-violet); }
+        .social-links { display: flex; gap: 15px; margin-top: 20px; }
+        .social-links a { 
+            display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; 
+            background: rgba(138, 43, 226, 0.2); color: var(--accent-violet); border-radius: 50%; 
+            text-decoration: none; transition: all 0.3s;
+        }
+        .social-links a:hover { background: var(--accent-purple); color: white; transform: translateY(-3px); }
+        .copyright { text-align: center; padding-top: 20px; border-top: 1px solid rgba(255, 255, 255, 0.1); color: var(--text-gray); }
+        
+        /* Responsive */
+        @media (max-width: 992px) {
+            .about-content { flex-direction: column; }
+            .hero h1 { font-size: 2.5rem; }
+        }
+        @media (max-width: 768px) {
+            .nav-links { 
+                display: none; position: absolute; top: 100%; left: 0; width: 100%; 
+                background: var(--card-bg); flex-direction: column; padding: 20px; 
+            }
+            .nav-links.active { display: flex; }
+            .nav-links li { margin: 10px 0; }
+            .mobile-menu-btn { display: block; }
+            .footer-content { flex-direction: column; gap: 30px; }
+            .footer-links { flex-wrap: wrap; }
+            section { padding: 60px 0; }
+            .hero h1 { font-size: 2rem; }
+        }
+        @media (max-width: 576px) {
+            .hero h1 { font-size: 1.8rem; }
+            .register-form { padding: 30px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header id="header">
+        <div class="container">
+            <nav>
+                <div class="logo"><i class="fas fa-radiation-alt"></i>СТАЛКЕР</div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#home">Главная</a></li>
+                    <li><a href="#about">О Зоне</a></li>
+                    <li><a href="#factions">Фракции</a></li>
+                    <li><a href="#artifacts">Артефакты</a></li>
+                    <li><a href="#register">Вход в Зону</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1>Зона Отчуждения</h1>
+                <p>Территория, изменившаяся после Второго катастрофы. Аномалии, артефакты, мутанты и бесконечные тайны. Стань сталкером, найди свой путь в этом мире, где стирается грань между наукой и мистикой.</p>
+                <a href="#register" class="btn">Войти в Зону</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="about">
+        <div class="container">
+            <h2 style="text-align: center; color: var(--accent-violet); margin-bottom: 50px;">Территория Тайн</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p>Чернобыльская Зона Отчуждения — место, где законы физики нарушаются, а реальность искажается. После Второго катастрофы здесь появились гравитационные аномалии, пси-поля и артефакты с необъяснимыми свойствами.</p>
+                    <p>Выживают здесь лишь те, кто научился читать знаки Зоны: сталкеры, ученые, военные и авантюристы. Каждый ищет здесь свое: одни — богатство, другие — знания, третьи — власть.</p>
+                    <p>Зона не прощает ошибок. Но для тех, кто знает ее законы, она открывает невероятные возможности.</p>
+                </div>
+                <div class="about-image">
+                    <img src="https://images.unsplash.com/photo-1591453089816-9c69b6d2d69c?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Заброшенная Припять">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Factions -->
+    <section id="factions" class="factions" style="background: rgba(10, 10, 20, 0.7);">
+        <div class="container">
+            <h2 style="text-align: center; color: var(--accent-violet); margin-bottom: 50px;">Фракции Зоны</h2>
+            <div class="faction-cards">
+                <div class="faction-card">
+                    <div class="faction-img">
+                        <img src="https://images.steamusercontent.com/ugc/921425209809001541/6E8178A26F3D46C91CD7F0C5B1308098728F05B9/" alt="Свободные сталкеры">
+                    </div>
+                    <div class="faction-info">
+                        <h3>Свободные сталкеры</h3>
+                        <p>Независимые искатели приключений, которые живут по своим правилам. Их цель — артефакты, знания и выживание любой ценой.</p>
+                        <div class="faction-tag">Нейтралы</div>
+                    </div>
+                </div>
+                <div class="faction-card">
+                    <div class="faction-img">
+                        <img src="https://avatars.mds.yandex.net/i?id=7457b965c304b1754fd18ee803320c59debb12c2-7019444-images-thumbs&n=13" alt="Долг">
+                    </div>
+                    <div class="faction-info">
+                        <h3>Долг</h3>
+                        <p>Военизированная организация, считающая Зону угрозой всему человечеству. Их кредо: "Наш долг — уничтожить Зону".</p>
+                        <div class="faction-tag">Военные</div>
+                    </div>
+                </div>
+                <div class="faction-card">
+                    <div class="faction-img">
+                        <img src="https://avatars.mds.yandex.net/i?id=164dce16618a12a42b35e2c4af3a3fb5e4a8c8fa-5324628-images-thumbs&n=13" alt="Свобода">
+                    </div>
+                    <div class="faction-info">
+                        <h3>Свобода</h3>
+                        <p>Идеалисты, верящие, что Зону нужно изучать, а не уничтожать. Они борются за свободный доступ к знаниям и артефактам.</p>
+                        <div class="faction-tag">Ученые</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Artifacts -->
+    <section id="artifacts" class="artifacts">
+        <div class="container">
+            <h2 style="text-align: center; color: var(--accent-violet); margin-bottom: 50px;">Артефакты Зоны</h2>
+            <div class="artifact-grid">
+                <div class="artifact-card">
+                    <div class="artifact-icon"><i class="fas fa-fire"></i></div>
+                    <h3>Огненный шар</h3>
+                    <p>Защищает от экстремальных температур. Образуется в термических аномалиях "Жарка".</p>
+                </div>
+                <div class="artifact-card">
+                    <div class="artifact-icon"><i class="fas fa-bolt"></i></div>
+                    <h3>Каменный цветок</h3>
+                    <p>Поглощает электрические разряды. Находится в электромагнитных аномалиях.</p>
+                </div>
+                <div class="artifact-card">
+                    <div class="artifact-icon"><i class="fas fa-shield-alt"></i></div>
+                    <h3>Пузырь</h3>
+                    <p>Снижает радиационное воздействие. Ценный для всех сталкеров.</p>
+                </div>
+                <div class="artifact-card">
+                    <div class="artifact-icon"><i class="fas fa-running"></i></div>
+                    <h3>Колобок</h3>
+                    <p>Увеличивает скорость реакции. Образуется в гравитационных аномалиях.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Register -->
+    <section id="register" class="register" style="background: rgba(0, 0, 0, 0.6);">
+        <div class="container">
+            <h2 style="text-align: center; color: var(--accent-violet); margin-bottom: 30px;">Сталкер, входи в Зону</h2>
+            <p style="text-align: center; color: var(--text-gray); margin-bottom: 40px; max-width: 800px; margin-left: auto; margin-right: auto;">Заполни данные для прохода через КПП. Помни: Зона меняет всех, кто в нее входит.</p>
+            
+            <div class="register-form">
+                <form id="stalkerForm">
+                    <div class="form-group">
+                        <label for="name">Позывной:</label>
+                        <input type="text" id="name" class="form-control" placeholder="Твой сталкерский позывной" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Частота рации:</label>
+                        <input type="email" id="email" class="form-control" placeholder="Частота для связи" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Присоединиться к:</label>
+                        <div class="radio-group">
+                            <div class="radio-option"><input type="radio" id="faction1" name="faction" value="stalker" checked> <label for="faction1">Свободные</label></div>
+                            <div class="radio-option"><input type="radio" id="faction2" name="faction" value="duty"> <label for="faction2">Долг</label></div>
+                            <div class="radio-option"><input type="radio" id="faction3" name="faction" value="freedom"> <label for="faction3">Свобода</label></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="experience">Опыт в Зоне:</label>
+                        <select id="experience" class="form-control" required>
+                            <option value="" disabled selected>Выбери уровень</option>
+                            <option value="newbie">Новичок (первый заход)</option>
+                            <option value="experienced">Бывалый (2-5 вылазок)</option>
+                            <option value="veteran">Ветеран (более 5 вылазок)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Твоя цель в Зоне:</label>
+                        <textarea id="message" class="form-control" rows="3" placeholder="Зачем ты идешь в Зону?"></textarea>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%;">Подтвердить вход</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <div class="footer-logo"><i class="fas fa-radiation-alt"></i> Зона Отчуждения</div>
+                    <p style="color: var(--text-gray); margin-bottom: 20px; max-width: 300px;">Официальный портал сталкеров. Все данные зашифрованы. Остерегайтесь мутантов.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-telegram"></i></a>
+                        <a href="#"><i class="fas fa-radio"></i></a>
+                        <a href="#"><i class="fas fa-map-marked-alt"></i></a>
+                        <a href="#"><i class="fas fa-first-aid"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4>Навигация</h4>
+                        <ul>
+                            <li><a href="#home">КПП "Зона"</a></li>
+                            <li><a href="#about">Карта аномалий</a></li>
+                            <li><a href="#factions">Базы фракций</a></li>
+                            <li><a href="#artifacts">Каталог артефактов</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h4>Ресурсы</h4>
+                        <ul>
+                            <li><a href="#">Черный рынок</a></li>
+                            <li><a href="#">Бар "100 рентген"</a></li>
+                            <li><a href="#">Лаборатория X-18</a></li>
+                            <li><a href="#">Архив Монолита</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© 2023 Зона Отчуждения. Все права защищены. "Выживает сильнейший"</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuBtn.innerHTML = navLinks.classList.contains('active') 
+                ? '<i class="fas fa-times"></i>' 
+                : '<i class="fas fa-bars"></i>';
+        });
+        
+        // Header scroll effect
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            header.classList.toggle('scrolled', window.scrollY > 50);
+        });
+        
+        // Form submission
+        document.getElementById('stalkerForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('name').value;
+            const faction = document.querySelector('input[name="faction"]:checked').value;
+            let factionName = '';
+            if (faction === 'stalker') factionName = 'Свободным сталкерам';
+            else if (faction === 'duty') factionName = 'Долгу';
+            else if (faction === 'freedom') factionName = 'Свободе';
+            alert(`Позывной "${name}", ваша заявка на присоединение к "${factionName}" принята. Ожидайте дальнейших инструкций по рации. Удачи в Зоне!`);
+            this.reset();
+        });
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
